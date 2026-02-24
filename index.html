@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PIMS Prototype - Opportunity Driven Product Development</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --primary-soft: #dbeafe;
+      --success: #16a34a;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --border: #e5e7eb;
+      --shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.45;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      min-height: 100vh;
+    }
+
+    aside {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 1.3rem 1rem;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      letter-spacing: 0.2px;
+    }
+
+    .brand small {
+      display: block;
+      color: #93c5fd;
+      font-weight: 500;
+      font-size: 0.78rem;
+      margin-top: 0.2rem;
+    }
+
+    nav a {
+      display: block;
+      text-decoration: none;
+      color: #cbd5e1;
+      padding: 0.6rem 0.7rem;
+      border-radius: 10px;
+      margin-bottom: 0.35rem;
+      font-size: 0.92rem;
+    }
+
+    nav a:hover,
+    nav a.active {
+      background: #1e293b;
+      color: #fff;
+    }
+
+    main {
+      padding: 1.2rem 1.6rem 3rem;
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: 1.45rem;
+    }
+
+    .title p {
+      margin: 0.2rem 0 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      gap: 0.3rem;
+      align-items: center;
+      border-radius: 999px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.7rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.9rem;
+      margin: 1rem 0 1.2rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1rem;
+    }
+
+    .metric {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 0.25rem 0;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 0.84rem;
+      margin: 0;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      border-radius: 8px;
+      display: inline-block;
+      padding: 0.2rem 0.45rem;
+      margin-top: 0.45rem;
+      background: var(--primary-soft);
+      color: #1d4ed8;
+    }
+
+    .section {
+      margin-top: 1.1rem;
+      scroll-margin-top: 18px;
+    }
+
+    .section h2 {
+      margin: 0 0 0.35rem;
+      font-size: 1.2rem;
+    }
+
+    .section > p {
+      margin: 0 0 0.85rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .columns {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.87rem;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.62rem;
+      border-bottom: 1px solid #eef2f7;
+      vertical-align: top;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #374151;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+
+    .status {
+      font-size: 0.74rem;
+      border-radius: 999px;
+      padding: 0.2rem 0.55rem;
+      display: inline-block;
+      font-weight: 600;
+    }
+
+    .upcoming { background: #fef3c7; color: #92400e; }
+    .ongoing { background: #dbeafe; color: #1e40af; }
+    .completed { background: #dcfce7; color: #166534; }
+    .approved { background: #bbf7d0; color: #14532d; }
+    .retrial { background: #fee2e2; color: #991b1b; }
+
+    .progress {
+      width: 100%;
+      height: 9px;
+      border-radius: 999px;
+      background: #e5e7eb;
+      overflow: hidden;
+      margin-top: 0.2rem;
+    }
+
+    .progress span {
+      height: 100%;
+      display: block;
+      background: var(--primary);
+    }
+
+    .chart-bar {
+      margin: 0.55rem 0;
+    }
+
+    .chart-bar label {
+      font-size: 0.83rem;
+      color: #374151;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+      align-items: center;
+      margin-top: 0.75rem;
+    }
+
+    .node {
+      text-align: center;
+      font-size: 0.75rem;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.55rem 0.35rem;
+    }
+
+    .node strong { display: block; font-size: 0.77rem; }
+
+    .arrow {
+      text-align: center;
+      color: #94a3b8;
+      font-size: 1.1rem;
+    }
+
+    .steps {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.7rem;
+    }
+
+    .steps li {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.65rem;
+      background: #fff;
+    }
+
+    .steps li strong { font-size: 0.9rem; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.7rem;
+      margin-top: 0.65rem;
+    }
+
+    .field {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.6rem;
+      background: #fff;
+    }
+
+    .field b {
+      display: block;
+      font-size: 0.8rem;
+      color: #4b5563;
+      margin-bottom: 0.2rem;
+      font-weight: 600;
+    }
+
+    .value {
+      font-size: 0.9rem;
+    }
+
+    .value.mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.82rem;
+    }
+
+    .result {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.7rem;
+      margin-top: 0.8rem;
+    }
+
+    .kpi {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.65rem;
+      background: #fff;
+    }
+
+    .kpi h4 {
+      margin: 0;
+      font-size: 0.82rem;
+      color: #4b5563;
+    }
+
+    .kpi p {
+      margin: 0.2rem 0 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .checklist {
+      margin: 0.5rem 0 0;
+      padding-left: 1rem;
+      font-size: 0.88rem;
+    }
+
+    .checklist li { margin: 0.22rem 0; }
+
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: 1fr; }
+      aside { height: auto; position: static; }
+      .columns { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: repeat(4, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside>
+      <div class="brand">PIMS Prototype
+        <small>Opportunity-Driven Product Development</small>
+      </div>
+      <nav>
+        <a class="active" href="#dashboard">Dashboard</a>
+        <a href="#doe">1) Create DOE</a>
+        <a href="#trials">2) Trial Labs & Ratios</a>
+        <a href="#batches">3) Batch Selection & Trial Run</a>
+        <a href="#results">4) Yield Result Entry</a>
+        <a href="#qc">5) QC Checklist</a>
+        <a href="#risk">6) Risk Analysis</a>
+        <a href="#decision">7) Approval / Retrial</a>
+      </nav>
+    </aside>
+
+    <main>
+      <div class="topbar">
+        <div class="title">
+          <h1>Developer Workspace (Dummy Data)</h1>
+          <p>Opportunities synced from CRM and tracked through DOE, Trials, QC, and Risk to final decision.</p>
+        </div>
+        <div class="pill">👤 Developer: <strong>A. Nair</strong></div>
+      </div>
+
+      <section class="section" id="dashboard">
+        <h2>Main Dashboard</h2>
+        <p>High-level opportunity load and health for current sprint.</p>
+        <div class="grid-cards">
+          <article class="card">
+            <p class="sub">Upcoming Opportunities</p>
+            <p class="metric">12</p>
+            <span class="tag">+4 from CRM this week</span>
+          </article>
+          <article class="card">
+            <p class="sub">Ongoing Opportunities</p>
+            <p class="metric">7</p>
+            <span class="tag">5 in DOE, 2 in QC</span>
+          </article>
+          <article class="card">
+            <p class="sub">Completed Opportunities</p>
+            <p class="metric">21</p>
+            <span class="tag">76% approval rate</span>
+          </article>
+          <article class="card">
+            <p class="sub">Avg. DOE-to-Decision Time</p>
+            <p class="metric">9.3 days</p>
+            <span class="tag">-1.2 days vs last month</span>
+          </article>
+        </div>
+
+        <div class="columns">
+          <article class="card">
+            <h3>Opportunity Pipeline</h3>
+            <table aria-label="Opportunity pipeline table">
+              <thead>
+                <tr>
+                  <th>Opportunity</th>
+                  <th>Client / Use Case</th>
+                  <th>Current Stage</th>
+                  <th>Progress</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>OPP-4412 <br><small>Low-sugar drink stabilizer</small></td>
+                  <td>Hydra Foods</td>
+                  <td><span class="status ongoing">Ongoing</span></td>
+                  <td><div class="progress"><span style="width:68%"></span></div></td>
+                </tr>
+                <tr>
+                  <td>OPP-4427 <br><small>Plant protein binder</small></td>
+                  <td>Green Spoon</td>
+                  <td><span class="status upcoming">Upcoming</span></td>
+                  <td><div class="progress"><span style="width:15%"></span></div></td>
+                </tr>
+                <tr>
+                  <td>OPP-4380 <br><small>Bakery moisture retention</small></td>
+                  <td>Dawn Mills</td>
+                  <td><span class="status completed">Completed</span></td>
+                  <td><div class="progress"><span style="width:100%"></span></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </article>
+
+          <article class="card">
+            <h3>Visuals</h3>
+            <p class="sub">Trial success rate by developer</p>
+            <div class="chart-bar">
+              <label><span>A. Nair</span><span>82%</span></label>
+              <div class="progress"><span style="width:82%"></span></div>
+            </div>
+            <div class="chart-bar">
+              <label><span>R. Mathew</span><span>74%</span></label>
+              <div class="progress"><span style="width:74%"></span></div>
+            </div>
+            <div class="chart-bar">
+              <label><span>J. Thomas</span><span>63%</span></label>
+              <div class="progress"><span style="width:63%"></span></div>
+            </div>
+            <hr>
+            <p class="sub">Developer workload</p>
+            <div class="chart-bar">
+              <label><span>Open DOE drafts</span><span>5</span></label>
+              <div class="progress"><span style="width:55%"></span></div>
+            </div>
+            <div class="chart-bar">
+              <label><span>Active trial labs</span><span>9</span></label>
+              <div class="progress"><span style="width:90%"></span></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="doe">
+        <h2>1) DOE Creation Screen</h2>
+        <p>When an opportunity moves from <strong>Upcoming</strong> to <strong>Ongoing</strong>, a DOE is created.</p>
+        <div class="card">
+          <div class="form-grid">
+            <div class="field"><b>DOE ID</b><span class="value mono">DOE-OPP-4412-v1</span></div>
+            <div class="field"><b>Output Product</b><span class="value">Sugar-Reduced Fruit Beverage Stabilizer</span></div>
+            <div class="field"><b>Purpose</b><span class="value">Improve mouthfeel while maintaining low viscosity</span></div>
+            <div class="field"><b>Trial Scope</b><span class="value">3 lab trials, 2 batch sources, 1 week cycle</span></div>
+            <div class="field"><b>Assigned Developer</b><span class="value">A. Nair</span></div>
+            <div class="field"><b>DOE Status</b><span class="status ongoing">Draft in Progress</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="trials">
+        <h2>2) Trial Labs & Ingredient Ratios</h2>
+        <p>Each DOE can contain multiple trials. Ratios must total 100% before saving and BOM finalization.</p>
+        <div class="columns">
+          <article class="card">
+            <h3>Trial Lab Definition</h3>
+            <ul class="steps">
+              <li>
+                <strong>Trial-01 (Baseline Viscosity)</strong>
+                <table>
+                  <thead>
+                    <tr><th>Raw Material Code</th><th>Name</th><th>% Ratio</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>RM-1001</td><td>Modified Starch</td><td>40%</td></tr>
+                    <tr><td>RM-2408</td><td>Gum Blend</td><td>35%</td></tr>
+                    <tr><td>RM-7810</td><td>Acidity Regulator</td><td>25%</td></tr>
+                  </tbody>
+                </table>
+                <span class="tag">Total Ratio: 100% ✓</span>
+              </li>
+              <li>
+                <strong>Trial-02 (Cost Optimized)</strong>
+                <table>
+                  <thead>
+                    <tr><th>Raw Material Code</th><th>Name</th><th>% Ratio</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>RM-1001</td><td>Modified Starch</td><td>30%</td></tr>
+                    <tr><td>RM-2408</td><td>Gum Blend</td><td>42%</td></tr>
+                    <tr><td>RM-9011</td><td>Maltodextrin</td><td>28%</td></tr>
+                  </tbody>
+                </table>
+                <span class="tag">Total Ratio: 100% ✓</span>
+              </li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <h3>BOM Finalization</h3>
+            <p class="sub">Saved once trial ratio validation is successful.</p>
+            <div class="field"><b>BOM Version</b><span class="value mono">BOM-4412-v1</span></div>
+            <div class="field"><b>Linked DOE</b><span class="value mono">DOE-OPP-4412-v1</span></div>
+            <div class="field"><b>Total Components</b><span class="value">3 per trial template</span></div>
+            <div class="field"><b>Version Status</b><span class="status completed">Finalized for Trial Run</span></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="batches">
+        <h2>3) Batch Selection & Trial Run Input</h2>
+        <p>Choose existing inventory batches or enter manual batch quantity. Record run quantities and consumed lots.</p>
+        <div class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>Material</th>
+                <th>Batch Selected</th>
+                <th>Available Qty</th>
+                <th>Consumed in Trial</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>RM-1001</td>
+                <td>BAT-1001-A</td>
+                <td>180 kg</td>
+                <td>36 kg</td>
+              </tr>
+              <tr>
+                <td>RM-2408</td>
+                <td>BAT-2408-C</td>
+                <td>140 kg</td>
+                <td>42 kg</td>
+              </tr>
+              <tr>
+                <td>RM-7810</td>
+                <td>Manual Entry</td>
+                <td>-</td>
+                <td>22 kg</td>
+              </tr>
+            </tbody>
+          </table>
+          <span class="tag">Trial Run ID: TRUN-4412-01 | Operator: Lab-3 | Runtime: 2h 15m</span>
+        </div>
+      </section>
+
+      <section class="section" id="results">
+        <h2>4) Trial Result Screen (Yield)</h2>
+        <p>Capture planned vs. actual yield and process variance for each trial run.</p>
+        <div class="card">
+          <div class="result">
+            <div class="kpi"><h4>Planned Yield</h4><p>95.0 kg</p></div>
+            <div class="kpi"><h4>Actual Yield</h4><p>91.8 kg</p></div>
+            <div class="kpi"><h4>Yield Variance</h4><p>-3.2%</p></div>
+            <div class="kpi"><h4>Scrap Generated</h4><p>2.1 kg</p></div>
+          </div>
+          <div class="field" style="margin-top: 0.8rem;">
+            <b>Observation Notes</b>
+            <span class="value">Foaming was higher in first 20 minutes; stabilized after temperature correction at 47°C.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="qc">
+        <h2>5) QC Feedback Screen</h2>
+        <p>Checklist-driven quality validation before risk review.</p>
+        <div class="columns">
+          <article class="card">
+            <h3>QC Parameter Checklist</h3>
+            <ul class="checklist">
+              <li>✅ Viscosity within range (1200–1350 cP)</li>
+              <li>✅ pH stability passed at 24h/48h checkpoints</li>
+              <li>⚠️ Color variation at +2.5% from target standard</li>
+              <li>✅ Microbial count below threshold</li>
+              <li>✅ Solubility test passed (cold application)</li>
+            </ul>
+          </article>
+          <article class="card">
+            <h3>QC Decision Entry</h3>
+            <div class="field"><b>QC Analyst</b><span class="value">M. George</span></div>
+            <div class="field"><b>QC Status</b><span class="status completed">Conditionally Approved</span></div>
+            <div class="field"><b>Required Action</b><span class="value">Adjust color profile by reducing RM-7810 to 23%</span></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="risk">
+        <h2>6) Risk Analysis Screen</h2>
+        <p>Financial, production, and market risk are captured before final decision.</p>
+        <div class="grid-cards">
+          <article class="card">
+            <h3>Financial Risk</h3>
+            <p class="sub">Raw material volatility + currency index impact</p>
+            <p class="metric" style="font-size:1.2rem;">Medium</p>
+            <span class="tag">Estimated margin impact: -1.8%</span>
+          </article>
+          <article class="card">
+            <h3>Production Risk</h3>
+            <p class="sub">Scale-up reproducibility from lab to pilot</p>
+            <p class="metric" style="font-size:1.2rem;">Low</p>
+            <span class="tag">Pilot line compatible</span>
+          </article>
+          <article class="card">
+            <h3>Market Risk</h3>
+            <p class="sub">Customer acceptance vs benchmark products</p>
+            <p class="metric" style="font-size:1.2rem;">Medium</p>
+            <span class="tag">Need blind tasting panel</span>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="decision">
+        <h2>7) Final Decision & Status Flow</h2>
+        <p>Clear path from opportunity intake through approval or retrial with a new BOM version.</p>
+        <div class="card">
+          <div class="flow" aria-label="Status flow">
+            <div class="node"><strong>CRM Intake</strong>Opportunity received</div>
+            <div class="arrow">➜</div>
+            <div class="node"><strong>Upcoming</strong>Developer queue</div>
+            <div class="arrow">➜</div>
+            <div class="node"><strong>Ongoing</strong>DOE + Trials</div>
+            <div class="arrow">➜</div>
+            <div class="node"><strong>QC & Risk</strong>Validation stage</div>
+          </div>
+          <div class="flow" style="margin-top:0.5rem;">
+            <div class="node"><strong>Approved</strong>Pilot production</div>
+            <div class="arrow">or</div>
+            <div class="node"><strong>Rejected</strong>Retrial required</div>
+            <div class="arrow">➜</div>
+            <div class="node"><strong>New BOM</strong>Version v2 created</div>
+            <div class="arrow">➜</div>
+            <div class="node"><strong>Retrial</strong>Loop to trial run</div>
+            <div class="arrow">➜</div>
+            <div class="node"><strong>Final Sign-off</strong>Completion</div>
+          </div>
+          <div class="result" style="margin-top: 1rem;">
+            <div class="kpi"><h4>Current Opportunity Decision</h4><p><span class="status approved">Approved for Pilot</span></p></div>
+            <div class="kpi"><h4>Alternative Scenario</h4><p><span class="status retrial">Retrial (BOM v2)</span></p></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
